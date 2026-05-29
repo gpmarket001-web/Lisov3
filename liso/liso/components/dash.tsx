@@ -7,6 +7,7 @@ import {
   Wallet, Settings, LogOut, Bell, Search,
 } from "lucide-react";
 import { Logo } from "@/components/site";
+import { logoutAction } from "@/app/actions/auth";
 
 const NAV = [
   { href: "/dashboard", label: "Visão geral", icon: LayoutDashboard },
@@ -42,14 +43,22 @@ export function Sidebar() {
           );
         })}
       </nav>
-      <Link href="/" className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-[var(--color-cream)]" style={{ color: "var(--color-ink-soft)" }}>
-        <LogOut className="h-[18px] w-[18px]" /> Sair
-      </Link>
+      <form action={logoutAction}>
+        <button type="submit" className="w-full flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition hover:bg-[var(--color-cream)]" style={{ color: "var(--color-ink-soft)" }}>
+          <LogOut className="h-[18px] w-[18px]" /> Sair
+        </button>
+      </form>
     </aside>
   );
 }
 
-export function Topbar({ title, sub }: { title: string; sub?: string }) {
+function iniciais(nome?: string) {
+  if (!nome) return "··";
+  const p = nome.trim().split(/\s+/);
+  return ((p[0]?.[0] ?? "") + (p[1]?.[0] ?? "")).toUpperCase() || nome.slice(0, 2).toUpperCase();
+}
+
+export function Topbar({ title, sub, clinica }: { title: string; sub?: string; clinica?: string }) {
   return (
     <header className="flex items-center justify-between gap-4 mb-8">
       <div>
@@ -57,15 +66,12 @@ export function Topbar({ title, sub }: { title: string; sub?: string }) {
         {sub && <p className="text-sm mt-1" style={{ color: "var(--color-ink-soft)" }}>{sub}</p>}
       </div>
       <div className="flex items-center gap-3">
-        <div className="hidden md:flex items-center gap-2 rounded-full bg-white border border-[var(--color-cream-deep)] px-4 py-2 text-sm" style={{ color: "var(--color-ink-soft)" }}>
-          <Search className="h-4 w-4" /> Buscar…
-        </div>
         <button className="relative h-10 w-10 rounded-full bg-white border border-[var(--color-cream-deep)] grid place-items-center">
           <Bell className="h-4 w-4" />
           <span className="absolute top-2 right-2 h-2 w-2 rounded-full" style={{ background: "var(--color-coral)" }} />
         </button>
         <div className="h-10 w-10 rounded-full grid place-items-center font-semibold text-[var(--color-cream)]" style={{ background: "var(--color-coral)" }}>
-          SG
+          {iniciais(clinica)}
         </div>
       </div>
     </header>
@@ -115,4 +121,13 @@ export function Badge({ status }: { status: string }) {
 
 export function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return <div className={`rounded-[var(--radius-xl2)] bg-white border border-[var(--color-cream-deep)] ${className}`}>{children}</div>;
+}
+
+export function EmptyState({ title, sub }: { title: string; sub?: string }) {
+  return (
+    <div className="rounded-[var(--radius-xl2)] border border-dashed border-[var(--color-sand)] bg-white/50 p-10 text-center">
+      <p className="font-display text-lg font-semibold">{title}</p>
+      {sub && <p className="text-sm mt-1" style={{ color: "var(--color-ink-soft)" }}>{sub}</p>}
+    </div>
+  );
 }

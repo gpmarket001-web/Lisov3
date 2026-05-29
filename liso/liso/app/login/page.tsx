@@ -1,15 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useActionState } from "react";
 import { Logo } from "@/components/site";
 import { ArrowRight } from "lucide-react";
+import { loginAction } from "@/app/actions/auth";
 
 export default function Login() {
-  const router = useRouter();
+  const [state, action, pending] = useActionState(loginAction, null);
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
-      {/* lado visual */}
       <div className="relative hidden lg:flex flex-col justify-between p-12 overflow-hidden" style={{ background: "var(--color-ink)" }}>
         <div className="absolute inset-0 opacity-50">
           <div className="glow-a absolute -top-20 -left-10 h-96 w-96 rounded-full blur-[120px]" style={{ background: "radial-gradient(circle, rgba(224,101,74,0.6), transparent 65%)" }} />
@@ -27,29 +27,34 @@ export default function Login() {
         <div className="relative text-sm" style={{ color: "color-mix(in srgb, var(--color-cream) 55%, transparent)" }}>© Liso</div>
       </div>
 
-      {/* form */}
       <div className="flex items-center justify-center p-8">
-        <div className="w-full max-w-sm">
+        <form action={action} className="w-full max-w-sm">
           <div className="lg:hidden mb-8"><Logo /></div>
           <h1 className="font-display text-3xl font-semibold">Bem-vinda de volta</h1>
           <p className="mt-2 text-sm" style={{ color: "var(--color-ink-soft)" }}>Entre na conta da sua clínica.</p>
 
           <div className="mt-8 space-y-4">
-            <input type="email" placeholder="email@suaclinica.com.br" className="w-full rounded-xl border border-[var(--color-cream-deep)] bg-white px-4 py-3.5 text-sm" />
-            <input type="password" placeholder="Senha" className="w-full rounded-xl border border-[var(--color-cream-deep)] bg-white px-4 py-3.5 text-sm" />
+            <input name="email" type="email" required placeholder="email@suaclinica.com.br" className="w-full rounded-xl border border-[var(--color-cream-deep)] bg-white px-4 py-3.5 text-sm" />
+            <input name="senha" type="password" required placeholder="Senha" className="w-full rounded-xl border border-[var(--color-cream-deep)] bg-white px-4 py-3.5 text-sm" />
+
+            {state?.error && (
+              <p className="text-sm rounded-lg px-3 py-2" style={{ background: "rgba(194,74,48,0.1)", color: "var(--color-coral-deep)" }}>{state.error}</p>
+            )}
+
             <button
-              onClick={() => router.push("/dashboard")}
-              className="group w-full inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 font-semibold text-[var(--color-cream)] shadow-lg hover:shadow-xl transition"
+              type="submit"
+              disabled={pending}
+              className="group w-full inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 font-semibold text-[var(--color-cream)] shadow-lg hover:shadow-xl transition disabled:opacity-60"
               style={{ background: "var(--color-coral)" }}
             >
-              Entrar <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              {pending ? "Entrando…" : "Entrar"} <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </button>
           </div>
 
           <p className="mt-6 text-sm text-center" style={{ color: "var(--color-ink-soft)" }}>
             Não tem conta? <Link href="/signup" className="font-semibold" style={{ color: "var(--color-coral)" }}>Testar grátis</Link>
           </p>
-        </div>
+        </form>
       </div>
     </div>
   );
